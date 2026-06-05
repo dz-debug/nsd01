@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>盛魁市井 - The Bustling Streets Of Shengkui</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            overflow: hidden;
+        }
+
+        /* ========== 页面容器 ========== */
+        .page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        .page.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* ========== 首页样式 ========== */
+        .home-page {
+            background: url('新建文件夹/0背景.png') center center / 100% 100% no-repeat;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .home-content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInUp 1s ease;
+        }
+
+        .home-subtitle {
+            font-size: 14px;
+            color: #C2185B;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .home-title {
+            font-size: 80px;
+            color: #E91E63;
+            font-weight: bold;
+            letter-spacing: 20px;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
+            margin-bottom: 40px;
+        }
+
+        .home-title-img {
+            width: 500px;
+            max-width: 70vw;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .home-seal {
+            position: absolute;
+            right: 35%;
+            top: 42%;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #E91E63;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #E91E63;
+            transform: rotate(5deg);
+        }
+
+        .start-btn {
+            padding: 15px 50px;
+            background: transparent;
+            border: 2px solid #E91E63;
+            color: #E91E63;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 4px;
+        }
+
+        .start-btn:hover {
+            background: #E91E63;
+            color: white;
+        }
+
+        /* ========== 加载页样式 ========== */
+        .loading-page {
+            background: url('新建文件夹/0背景.png') center center / 100% 100% no-repeat;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding-top: 80px;
+        }
+
+        .poem-container {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease;
+        }
+
+        .poem-line {
+            font-size: 16px;
+            color: #C2185B;
+            line-height: 2;
+            letter-spacing: 2px;
+        }
+
+        .progress-dots {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #E91E63;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #E91E63;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #C2185B;
+            margin-top: 10px;
+        }
+
+        .characters-row {
+            position: absolute;
+            bottom: 100px;
+            display: flex;
+            gap: 30px;
+            align-items: flex-end;
+        }
+
+        .character {
+            width: 60px;
+            height: 100px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: bottom;
+            animation: bounce 2s infinite;
+        }
+
+        /* ========== 市井长卷页面 ========== */
+        .scroll-page {
+            background: url('0背景.png') center center / 100% 100% no-repeat;
+            flex-direction: column;
+        }
+
+        .scroll-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .scroll-title-img {
+            height: 50px;
+            width: auto;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-title-img {
+            height: 50px;
+            width: auto;
+        }
+
+        .nav-title-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .nav-click-area {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .nav-item {
+            font-size: 14px;
+            color: #C2185B;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-item:hover {
+            color: #E91E63;
+        }
+
+        .nav-item.active {
+            color: #E91E63;
+            font-weight: bold;
+        }
+
+        .audio-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #E91E63;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #E91E63;
+        }
+
+        .scroll-container {
+            flex: 1;
+            overflow: hidden;
+            margin-top: 80px;
+            position: relative;
+        }
+
+        #world {
+            position: relative;
+            height: calc(100vh - 80px);
+            will-change: transform;
+        }
+
+        .scroll-image-wrapper {
+            position: relative;
+            display: inline-block;
+            height: 100%;
+        }
+
+        .scroll-image {
+            height: 100%;
+            width: auto;
+            display: block;
+        }
+
+        .hotspot-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* 热点样式 */
+        .hotspot {
+            position: absolute;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .hotspot-pulse {
+            width: 25px;
+            height: 25px;
+            background: transparent;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            border: 3px solid rgba(233, 30, 99, 0.8);
+            box-shadow: 0 0 10px rgba(233, 30, 99, 0.4);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(233, 30, 99, 0.3);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 0 10px rgba(233, 30, 99, 0);
+            }
+        }
+
+        .hotspot:hover .hotspot-pulse {
+            transform: scale(1.2);
+            background: radial-gradient(circle, rgba(233, 30, 99, 0.5) 0%, rgba(233, 30, 99, 0.25) 50%, transparent 70%);
+        }
+
+        .hotspot-label {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            color: #E91E63;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .hotspot:hover .hotspot-label {
+            opacity: 1;
+        }
+
+        /* ========== 大盛魁展示面板 ========== */
+        .dashengkui-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dashengkui-backdrop.active {
+            display: flex;
+        }
+
+        .dashengkui-content {
+            display: none;
+            position: fixed;
+            background: transparent;
+            border-radius: 12px;
+            overflow: hidden;
+            z-index: 2000;
+            width: auto;
+            height: auto;
+        }
+
+        .dashengkui-content.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dashengkui-main {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.1s ease-out;
+        }
+
+        .dashengkui-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.4s ease;
+            pointer-events: none;
+        }
+
+        .dashengkui-slide.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        .dashengkui-slide.exit {
+            opacity: 0;
+            transform: scale(0.9) translateY(-20px);
+        }
+
+        .dashengkui-slide img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .hotspot-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .slide-hotspot {
+            position: absolute;
+            cursor: pointer;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: auto;
+        }
+
+        .slide-hotspot:hover {
+            opacity: 0.08;
+            background: rgba(233, 30, 99, 0.4);
+        }
+
+        .dashengkui-close {
+            position: absolute;
+            top: 2%;
+            right: 2%;
+            width: 50px;
+            height: 50px;
+            background: transparent;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 36px;
+            color: rgba(255, 255, 255, 0.5);
+            z-index: 10;
+            transition: all 0.3s;
+            line-height: 1;
+        }
+
+        .dashengkui-close:hover {
+            transform: scale(1.15);
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(233, 30, 99, 0.15);
+        }
+
+        .dashengkui-nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(233, 30, 99, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 28px;
+            color: white;
+            z-index: 10;
+            transition: all 0.3s;
+            user-select: none;
+        }
+
+        .dashengkui-nav-arrow:hover {
+            background: rgba(233, 30, 99, 0.9);
+        }
+
+        .dashengkui-nav-arrow.prev {
+            left: -70px;
+        }
+
+        .dashengkui-nav-arrow.next {
+            right: 15px;
+        }
+
+        .dashengkui-counter {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 10;
+        }
+
+        /* ========== 详情弹窗（原样式保留） ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 4000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            position: relative;
+            animation: modalFadeIn 0.4s ease;
+            user-select: none;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 4001;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            color: #E91E63;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            z-index: 5;
+        }
+
+        .modal-close:hover {
+            transform: scale(1.1);
+            background: #E91E63;
+            color: white;
+        }
+
+        /* ========== 世界坐标系弹窗（新样式） ========== */
+        /* backdrop：覆盖当前视口 */
+        .world-modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .world-modal-backdrop.active {
+            display: block;
+        }
+
+        /* content：使用fixed定位，屏幕坐标 */
+        .world-modal-content {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            animation: modalFadeIn 0.4s ease;
+            user-select: none;
+            background: transparent;
+            box-shadow: none;
+            width: auto;
+            height: auto;
+        }
+
+        .world-modal-content.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .world-modal-content .modal-image {
+            max-width: 75vw;
+            max-height: 75vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            background: transparent;
+        }
+
+        /* ========== 滑动条控件 ========== */
+        .modal-sliders {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 5000;
+        }
+
+        .slider-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(233, 30, 99, 0.25);
+            backdrop-filter: blur(15px);
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(233, 30, 99, 0.4);
+            box-shadow: 0 4px 20px rgba(233, 30, 99, 0.2);
+        }
+
+        .slider-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            white-space: nowrap;
+            min-width: 40px;
+            text-align: center;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .slider-track {
+            position: relative;
+            width: 180px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .slider-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B9D, #E91E63);
+            border-radius: 2px;
+            pointer-events: none;
+            box-shadow: 0 0 8px rgba(233, 30, 99, 0.5);
+        }
+
+        .slider-thumb {
+            position: absolute;
+            top: 50%;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #FF8FB1, #E91E63);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: grab;
+            box-shadow: 0 2px 10px rgba(233, 30, 99, 0.6);
+            transition: box-shadow 0.2s, transform 0.2s;
+            pointer-events: auto;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .slider-thumb:hover {
+            box-shadow: 0 2px 15px rgba(233, 30, 99, 0.8);
+            transform: translate(-50%, -50%) scale(1.15);
+        }
+
+        .slider-thumb:active {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.25);
+        }
+
+        .slider-ticks {
+            position: absolute;
+            top: -8px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .slider-tick {
+            width: 1px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .slider-tick.active {
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 4px rgba(233, 30, 99, 0.4);
+        }
+
+        .slider-arrows {
+            display: flex;
+            gap: 4px;
+        }
+
+        .slider-arrow {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .slider-arrow:hover {
+            background: rgba(233, 30, 99, 0.6);
+        }
+
+        /* ========== 动画 ========== */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 768px) {
+            .home-title {
+                font-size: 48px;
+                letter-spacing: 10px;
+            }
+
+            .poem-line {
+                font-size: 14px;
+            }
+
+            .scroll-title {
+                font-size: 20px;
+            }
+
+            .hotspot-pulse {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========== 首页 ========== -->
+    <div class="page home-page active" id="homePage">
+        <div class="home-content">
+            <div class="home-subtitle">THE BUSTLING STREETS OF SHENGKUI</div>
+            <img src="左侧大标题.png" alt="盛魁市井" class="home-title-img">
+            <button class="start-btn" onclick="goToLoading()">进入市井</button>
+        </div>
+    </div>
+
+    <!-- ========== 加载页 ========== -->
+    <div class="page loading-page" id="loadingPage">
+        <div class="poem-container">
+            <div class="poem-line">踏入归化老城街巷，驼铃声声漫过古城墙</div>
+            <div class="poem-line">风沙轻卷古道，商号檐角摇落时光</div>
+            <div class="poem-line">城门内外，驼队络绎</div>
+            <div class="poem-line">街巷之间，商贾往来</div>
+            <div class="poem-line">晋商字号沿街林立，市井烟火缓缓铺展</div>
+            <div class="poem-line">挑货郎穿行巷陌，茶香酒香绕着街巷</div>
+            <div class="poem-line">百年盛魁，一城繁华</div>
+            <div class="poem-line">缓缓走进盛魁市井</div>
+        </div>
+        <div class="progress-dots">
+            <div class="dot active"></div>
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        <div class="progress-text">46%</div>
+    </div>
+
+    <!-- ========== 市井长卷页面 ========== -->
+    <div class="page scroll-page" id="scrollPage">
+        <!-- 背景音乐 -->
+        <audio id="bgMusic" src="6月2日.mp3" loop></audio>
+        
+        <div class="scroll-header">
+            <img src="左侧大标题.png" alt="盛魁市井" class="scroll-title-img">
+            <div class="header-nav">
+                <div class="nav-title-wrapper">
+                    <img src="大盛魁右上.png" alt="盛魁市井" class="nav-title-img">
+                    <div class="nav-click-area" onclick="openDashengkui()"></div>
+                </div>
+                <button class="audio-btn" onclick="toggleAudio()"></button>
+            </div>
+        </div>
+        <div class="scroll-container" id="scrollContainer">
+            <div id="world">
+                <div class="scroll-image-wrapper">
+                    <img src="图.png" alt="市井长卷" class="scroll-image" id="scrollImage">
+                    
+                    <!-- ========== 热点区域 - 24个图片一一对应 ========== -->
+                    <div class="hotspot" style="left: 96.09%; top: 77.29%;" onclick="openModal('阿拉坦汗.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">阿拉坦汗</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 3.70%; top: 50.72%;" onclick="openModal('北门.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">北门</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 32.54%; top: 85.51%;" onclick="openModal('扁担与木箱.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">扁担与木箱</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 38.76%; top: 85.02%;" onclick="openModal('大盛魁驼队.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">大盛魁驼队</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 22.00%; top: 63.77%;" onclick="openModal('大义魁粮店.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">大义魁粮店</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 61.36%; top: 28.50%;" onclick="openModal('德记毛庄.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">德记毛庄</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 12.78%; top: 46.38%;" onclick="openModal('观音寺.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">观音寺</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 4.40%; top: 18.36%;" onclick="openModal('汉口马庄.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">汉口马庄</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 62.43%; top: 49.76%;" onclick="openModal('老驼报恩.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">老驼报恩</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 46.93%; top: 79.71%;" onclick="openModal('乐记永和堂药店.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">乐记永和堂药店</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 92.30%; top: 14.98%;" onclick="openModal('乐盛公牲畜店.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">乐盛公牲畜店</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 71.42%; top: 27.54%;" onclick="openModal('牌楼.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">牌楼</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 28.56%; top: 35.27%;" onclick="openModal('庆凯桥.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">庆凯桥</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 35.54%; top: 60.39%;" onclick="openModal('三玉川茶铺.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">三玉川茶铺</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 50.91%; top: 24.15%;" onclick="openModal('烧卖.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">烧卖</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 22.35%; top: 47.83%;" onclick="openModal('天顺泰绸缎庄.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">天顺泰绸缎庄</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 56.28%; top: 49.28%;" onclick="openModal('望月楼.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">望月楼</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 83.15%; top: 76.33%;" onclick="openModal('无量寺.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">无量寺</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 39.46%; top: 23.19%;" onclick="openModal('五塔.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">五塔</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 9.92%; top: 19.32%;" onclick="openModal('武川莜面.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">武川莜面</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 63.31%; top: 74.88%;" onclick="openModal('昔日街景.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">昔日街景</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 80.63%; top: 18.36%;" onclick="openModal('兴盛隆铁铺.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">兴盛隆铁铺</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 33.66%; top: 13.04%;" onclick="openModal('银号.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">银号</div>
+                    </div>
+
+                    <div class="hotspot" style="left: 16.69%; top: 38.65%;" onclick="openModal('扎达盖河.png')">
+                        <div class="hotspot-pulse"></div>
+                        <div class="hotspot-label">扎达盖河</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- ========== 详情弹窗（图片弹窗，移到scroll-page层级） ========== -->
+        <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-close" onclick="closeModal(event)">&times;</div>
+                <img src="" alt="详情" class="modal-image" id="modalImage">
+            </div>
+        </div>
+
+        <!-- ========== 滑动条控件（固定在右下角） ========== -->
+        <div class="modal-sliders" id="modalSliders" style="display: none;">
+            <div class="slider-control">
+                <span class="slider-label">滑动</span>
+                <div class="slider-track" id="scrollSlider">
+                    <div class="slider-ticks" id="scrollTicks"></div>
+                    <div class="slider-fill" id="scrollFill"></div>
+                    <div class="slider-thumb" id="scrollThumb"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 全局滚动状态管理 ==========
+        let currentOffset = 0;
+        let maxScroll = 0;
+        
+        // ========== 弹窗世界坐标状态 ==========
+        let modalWorldX = 0;
+        let modalWorldY = 0;
+        
+        // ========== 大盛魁世界坐标状态 ==========
+        let dashengkuiWorldX = 0;
+        let dashengkuiWorldY = 0;
+        
+        function updateMaxScroll() {
+            const scrollContainer = document.getElementById('scrollContainer');
+            const world = document.getElementById('world');
+            if (scrollContainer && world) {
+                maxScroll = Math.max(0, world.scrollWidth - scrollContainer.clientWidth);
+            }
+        }
+        
+        function setWorldOffset(offset) {
+            currentOffset = Math.max(0, Math.min(maxScroll, offset));
+            const world = document.getElementById('world');
+            if (world) {
+                world.style.transform = 'translateX(-' + currentOffset + 'px)';
+            }
+            updateSliderUI();
+            updateModalPositionFromWorld();
+            updateDashengkuiPositionFromWorld();
+        }
+        
+        // 从世界坐标更新弹窗屏幕位置
+        function updateModalPositionFromWorld() {
+            const content = document.getElementById('modalContent');
+            const scrollContainer = document.getElementById('scrollContainer');
+            if (!content || !content.classList.contains('active') || !scrollContainer) return;
+            
+            // 世界坐标转屏幕坐标（X轴跟随world移动）
+            const screenX = modalWorldX - currentOffset;
+            
+            // Y轴固定居中（不随world移动）
+            const viewportHeight = scrollContainer.clientHeight;
+            const contentRect = content.getBoundingClientRect();
+            const modalHeight = contentRect.height || (viewportHeight * 0.7);
+            const screenY = (viewportHeight - modalHeight) / 2;
+            
+            content.style.left = screenX + 'px';
+            content.style.top = screenY + 'px';
+        }
+        
+        function updateSliderUI() {
+            const scrollFill = document.getElementById('scrollFill');
+            const scrollThumb = document.getElementById('scrollThumb');
+            const scrollTicks = document.getElementById('scrollTicks');
+            
+            if (!scrollFill || !scrollThumb) return;
+            
+            const percent = maxScroll > 0 ? (currentOffset / maxScroll) * 100 : 0;
+            scrollFill.style.width = percent + '%';
+            scrollThumb.style.left = percent + '%';
+            
+            // 更新刻度
+            if (scrollTicks) {
+                const ticks = scrollTicks.querySelectorAll('.slider-tick');
+                const activeIndex = Math.floor(percent / 100 * (ticks.length - 1));
+                ticks.forEach((tick, i) => {
+                    tick.classList.toggle('active', i <= activeIndex);
+                });
+            }
+        }
+
+        // 页面切换函数
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            // 页面切换后重新计算maxScroll
+            setTimeout(updateMaxScroll, 100);
+        }
+
+        // 进入加载页
+        function goToLoading() {
+            // 开始播放背景音乐
+            const bgMusic = document.getElementById('bgMusic');
+            if (bgMusic) {
+                bgMusic.play();
+                audioPlaying = true;
+            }
+            
+            showPage('loadingPage');
+            
+            // 模拟加载进度
+            let progress = 46;
+            const dots = document.querySelectorAll('.loading-page .dot');
+            const progressText = document.querySelector('.progress-text');
+            
+            const interval = setInterval(() => {
+                progress += 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        showPage('scrollPage');
+                    }, 500);
+                }
+                
+                // 更新圆点
+                const activeDots = Math.floor(progress / 20);
+                dots.forEach((dot, index) => {
+                    if (index < activeDots) {
+                        dot.classList.add('active');
+                    }
+                });
+                
+                progressText.textContent = progress + '%';
+            }, 300);
+        }
+
+        // 保存当前点击的热点元素
+        let currentHotspotElement = null;
+
+        // 重写热点的点击事件，保存点击的元素
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrollContainer = document.getElementById('scrollContainer');
+            const world = document.getElementById('world');
+            
+            if (scrollContainer && world) {
+                // ========== 创建热点弹窗元素 ==========
+                // 创建 backdrop（覆盖视口）
+                let backdrop = document.getElementById('modalBackdrop');
+                if (!backdrop) {
+                    backdrop = document.createElement('div');
+                    backdrop.className = 'world-modal-backdrop';
+                    backdrop.id = 'modalBackdrop';
+                    backdrop.onclick = closeModal;
+                    scrollContainer.appendChild(backdrop);
+                }
+                
+                // 创建 content（也放在scrollContainer下，fixed定位）
+                let content = document.getElementById('modalContent');
+                if (content && content.parentNode !== scrollContainer) {
+                    content.remove();
+                    content = null;
+                }
+                
+                if (!content) {
+                    content = document.createElement('div');
+                    content.className = 'world-modal-content';
+                    content.id = 'modalContent';
+                    
+                    const closeBtn = document.createElement('div');
+                    closeBtn.className = 'modal-close';
+                    closeBtn.innerHTML = '&times;';
+                    closeBtn.onclick = closeModal;
+                    
+                    const img = document.createElement('img');
+                    img.className = 'modal-image';
+                    img.id = 'modalImage';
+                    img.alt = '详情';
+                    
+                    content.appendChild(closeBtn);
+                    content.appendChild(img);
+                    scrollContainer.appendChild(content);
+                }
+                
+                // ========== 创建大盛魁元素 ==========
+                // 创建大盛魁 backdrop
+                let dsBackdrop = document.getElementById('dashengkuiBackdrop');
+                if (!dsBackdrop) {
+                    dsBackdrop = document.createElement('div');
+                    dsBackdrop.className = 'dashengkui-backdrop';
+                    dsBackdrop.id = 'dashengkuiBackdrop';
+                    dsBackdrop.onclick = closeDashengkui;
+                    scrollContainer.appendChild(dsBackdrop);
+                }
+                
+                // 创建大盛魁 content（放在scrollContainer下，fixed定位）
+                let dsContent = document.getElementById('dashengkuiContent');
+                if (dsContent && dsContent.parentNode !== scrollContainer) {
+                    dsContent.remove();
+                    dsContent = null;
+                }
+                
+                if (!dsContent) {
+                    dsContent = document.createElement('div');
+                    dsContent.className = 'dashengkui-content';
+                    dsContent.id = 'dashengkuiContent';
+                    
+                    // 关闭按钮
+                    const closeBtn = document.createElement('div');
+                    closeBtn.className = 'dashengkui-close';
+                    closeBtn.innerHTML = '&times;';
+                    closeBtn.onclick = closeDashengkui;
+                    
+                    // 主区域
+                    const main = document.createElement('div');
+                    main.className = 'dashengkui-main';
+                    
+                    // 导航箭头
+                    const prevArrow = document.createElement('div');
+                    prevArrow.className = 'dashengkui-nav-arrow prev';
+                    prevArrow.innerHTML = '&#10094;';
+                    prevArrow.onclick = prevSlide;
+                    
+                    const nextArrow = document.createElement('div');
+                    nextArrow.className = 'dashengkui-nav-arrow next';
+                    nextArrow.innerHTML = '&#10095;';
+                    nextArrow.onclick = nextSlide;
+                    
+                    // 计数器
+                    const counter = document.createElement('div');
+                    counter.className = 'dashengkui-counter';
+                    counter.id = 'dashengkuiCounter';
+                    counter.textContent = '1 / 10';
+                    
+                    main.appendChild(prevArrow);
+                    main.appendChild(nextArrow);
+                    main.appendChild(counter);
+                    
+                    // 10个slide
+                    const slideImages = ['1.png', '2.png', '3.png', '4.png', '5.png', '6.png', '7.png', '8.png', '9.png', '10.png'];
+                    const slideAlts = ['起源', '地理', '线路', '发展', '商号', '招幌', '体系', '市价', '礼仪上', '礼仪下'];
+                    
+                    slideImages.forEach((imgSrc, i) => {
+                        const slide = document.createElement('div');
+                        slide.className = 'dashengkui-slide';
+                        slide.dataset.slide = i;
+                        if (i === 0) slide.classList.add('active');
+                        
+                        const img = document.createElement('img');
+                        img.src = imgSrc;
+                        img.alt = slideAlts[i];
+                        
+                        const hotspotContainer = document.createElement('div');
+                        hotspotContainer.className = 'hotspot-container';
+                        
+                        slide.appendChild(img);
+                        slide.appendChild(hotspotContainer);
+                        main.appendChild(slide);
+                    });
+                    
+                    dsContent.appendChild(closeBtn);
+                    dsContent.appendChild(main);
+                    scrollContainer.appendChild(dsContent);
+                }
+            }
+            
+            const hotspots = document.querySelectorAll('.hotspot');
+            hotspots.forEach(hotspot => {
+                hotspot.onclick = function(event) {
+                    currentHotspotElement = this;
+                    const imgSrc = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+                    openModal(imgSrc);
+                };
+            });
+        });
+
+        // 打开弹窗（新逻辑）
+        function openModal(imageSrc) {
+            const backdrop = document.getElementById('modalBackdrop');
+            const content = document.getElementById('modalContent');
+            const modalImg = document.getElementById('modalImage');
+            const world = document.getElementById('world');
+            const scrollContainer = document.getElementById('scrollContainer');
+            const sliders = document.getElementById('modalSliders');
+            
+            if (!backdrop || !content || !world || !scrollContainer) return;
+            
+            modalImg.src = imageSrc;
+            
+            // 计算弹窗世界坐标
+            if (currentHotspotElement) {
+                const hotspotLeftPercent = parseFloat(currentHotspotElement.style.left);
+                const hotspotTopPercent = parseFloat(currentHotspotElement.style.top);
+                
+                // 热点在world中的绝对位置（世界坐标）
+                const hotspotX = (hotspotLeftPercent / 100) * world.scrollWidth;
+                const hotspotY = (hotspotTopPercent / 100) * world.clientHeight;
+                
+                // 热点在当前视口中的位置
+                const viewportX = hotspotX - currentOffset;
+                const viewportWidth = scrollContainer.clientWidth;
+                const viewportHeight = scrollContainer.clientHeight;
+                
+                // 预估弹窗宽度（用于定位）
+                const estimatedModalWidth = viewportWidth * 0.7;
+                
+                // 根据热点在视口中的位置判断左/中/右区域
+                let modalWorldLeft;
+                const viewportPosition = viewportX / viewportWidth; // 热点在视口中的相对位置
+                
+                if (viewportPosition < 0.33) {
+                    // 左区域（视口左侧1/3）：弹窗显示在热点右侧（世界坐标）
+                    modalWorldLeft = hotspotX + viewportWidth * 0.05;
+                } else if (viewportPosition >= 0.33 && viewportPosition <= 0.66) {
+                    // 中区域（视口中间1/3）：弹窗居中显示（世界坐标）
+                    modalWorldLeft = hotspotX - estimatedModalWidth / 2;
+                } else {
+                    // 右区域（视口右侧1/3）：弹窗显示在热点左侧（世界坐标）
+                    modalWorldLeft = hotspotX - estimatedModalWidth - viewportWidth * 0.05;
+                }
+                
+                // Y轴在updateModalPositionFromWorld中统一处理
+                modalWorldX = modalWorldLeft;
+                modalWorldY = 0; // 占位，实际不使用
+                
+
+            }
+            
+            backdrop.classList.add('active');
+            content.classList.add('active');
+            sliders.style.display = 'flex';
+            
+            // 立即更新屏幕位置
+            updateModalPositionFromWorld();
+        }
+
+        // 关闭弹窗（新逻辑）
+        function closeModal(event) {
+            if (event.target.id === 'modalBackdrop' || 
+                event.target.classList.contains('modal-close')) {
+                const backdrop = document.getElementById('modalBackdrop');
+                const content = document.getElementById('modalContent');
+                const sliders = document.getElementById('modalSliders');
+                
+                if (backdrop) backdrop.classList.remove('active');
+                if (content) content.classList.remove('active');
+                if (sliders) sliders.style.display = 'none';
+            }
+        }
+
+        // 滑动条控件功能
+        (function() {
+            const scrollSlider = document.getElementById('scrollSlider');
+            const scrollTicks = document.getElementById('scrollTicks');
+            
+            // 生成刻度
+            function createTicks(container, count) {
+                if (!container) return;
+                container.innerHTML = '';
+                for (let i = 0; i < count; i++) {
+                    const tick = document.createElement('div');
+                    tick.className = 'slider-tick';
+                    container.appendChild(tick);
+                }
+            }
+            
+            createTicks(scrollTicks, 20);
+            
+            // 滑动条拖拽
+            let isDragging = false;
+            
+            function handleDrag(e) {
+                if (!isDragging) return;
+                const rect = scrollSlider.getBoundingClientRect();
+                const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                const targetOffset = percent * maxScroll;
+                setWorldOffset(targetOffset);
+            }
+            
+            scrollSlider.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                handleDrag(e);
+                e.stopPropagation();
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                handleDrag(e);
+            });
+            
+            document.addEventListener('mouseup', function() {
+                isDragging = false;
+            });
+            
+            // 初始化
+            updateMaxScroll();
+            updateSliderUI();
+            
+            // 窗口大小改变时重新计算
+            window.addEventListener('resize', function() {
+                updateMaxScroll();
+                // 保持当前百分比位置
+                const percent = maxScroll > 0 ? currentOffset / maxScroll : 0;
+                setWorldOffset(percent * maxScroll);
+                
+                // 如果图片弹窗打开，更新其尺寸
+                const modalOverlay = document.getElementById('modalOverlay');
+                if (modalOverlay && modalOverlay.classList.contains('active')) {
+                    const scrollContainer = document.getElementById('scrollContainer');
+                    const modalContent = modalOverlay.querySelector('.modal-content');
+                    
+                    const viewportWidth = scrollContainer.clientWidth;
+                    const viewportHeight = scrollContainer.clientHeight;
+                    modalOverlay.style.width = viewportWidth + 'px';
+                    modalOverlay.style.height = viewportHeight + 'px';
+                    
+                    const contentHeight = viewportHeight * 0.8;
+                    const contentWidth = viewportWidth * 0.8;
+                    if (modalContent) {
+                        modalContent.style.height = contentHeight + 'px';
+                        modalContent.style.width = contentWidth + 'px';
+                    }
+                }
+            });
+        })();
+        
+        // 鼠标滚轮事件
+        (function() {
+            const scrollContainer = document.getElementById('scrollContainer');
+            if (!scrollContainer) return;
+            
+            scrollContainer.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                const delta = e.deltaY || e.deltaX;
+                const scrollSpeed = 50;
+                setWorldOffset(currentOffset + (delta > 0 ? scrollSpeed : -scrollSpeed));
+            }, { passive: false });
+        })();
+
+        // 音频控制
+        let audioPlaying = false;
+        function toggleAudio() {
+            const bgMusic = document.getElementById('bgMusic');
+            if (!bgMusic) return;
+            
+            audioPlaying = !audioPlaying;
+            
+            if (audioPlaying) {
+                bgMusic.play();
+            } else {
+                bgMusic.pause();
+            }
+        }
+
+        // ESC键关闭弹窗
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                // 关闭详情弹窗
+                closeModal();
+                // 关闭大盛魁面板
+                closeDashengkui();
+            }
+        });
+
+        // ========== 大盛魁展示面板 ==========
+        
+        // 导航栏目配置：9个主栏目，对应10页（礼仪占2页）
+     const navItems = [
+    { name: '起源', slides: [0], top: 10, height: 11},
+    { name: '地理', slides: [1], top: 18.3, height: 9},
+    { name: '线路', slides: [2], top: 28.2, height: 9},
+    { name: '发展', slides: [3], top: 34.8, height: 9 },
+    { name: '商号', slides: [4], top: 41.8, height: 9 },
+    { name: '招幌', slides: [5], top: 49.0, height: 9 },
+    { name: '体系', slides: [6], top: 55.8, height: 9 },
+    { name: '市价', slides: [7], top: 63.0, height: 9 },
+    { name: '礼仪', slides: [8,9], top: 70.0, height: 10}
+];
+
+        let currentSlide = 0;
+        const totalSlides = 10;
+
+        // 获取当前栏目索引
+        function getCurrentNavItemIndex() {
+            for (let i = 0; i < navItems.length; i++) {
+                if (navItems[i].slides.includes(currentSlide)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        // 动态生成热点
+        function generateHotspots() {
+            // 清除所有幻灯片的热点
+            document.querySelectorAll('.hotspot-container').forEach(c => c.innerHTML = '');
+            
+            const currentNavIndex = getCurrentNavItemIndex();
+            
+            // 获取当前活动的幻灯片
+            const activeSlide = document.querySelector('.dashengkui-slide.active');
+            if (!activeSlide) return;
+            
+            const container = activeSlide.querySelector('.hotspot-container');
+            if (!container) return;
+            
+            navItems.forEach((item, index) => {
+                // 当前栏目不生成热点
+                if (index === currentNavIndex) return;
+                
+                const hotspot = document.createElement('div');
+                hotspot.className = 'slide-hotspot';
+                hotspot.style.top = item.top + '%';
+                hotspot.style.left = '0';
+                hotspot.style.width = '15%';
+                hotspot.style.height = item.height + '%';
+                hotspot.title = item.name;
+                hotspot.onclick = function() {
+                    goToSlide(item.slides[0]);
+                };
+                container.appendChild(hotspot);
+            });
+        }
+
+        // 大盛魁面板原始宽高比 (3197:1852)
+        const DASHENGKUI_ASPECT_RATIO = 3197 / 1852;
+        let dashengkuiPanelHeight = 0;
+        let dashengkuiPanelWidth = 0;
+        
+        function updateDashengkuiPanelSize() {
+            const scrollContainer = document.getElementById('scrollContainer');
+            if (!scrollContainer) return;
+            
+            const containerHeight = scrollContainer.clientHeight;
+            // 高度占画卷的80%
+            dashengkuiPanelHeight = containerHeight * 0.8;
+            // 保持横纵比计算宽度
+            dashengkuiPanelWidth = dashengkuiPanelHeight * DASHENGKUI_ASPECT_RATIO;
+        }
+        
+        function openDashengkui() {
+            const backdrop = document.getElementById('dashengkuiBackdrop');
+            const content = document.getElementById('dashengkuiContent');
+            const world = document.getElementById('world');
+            const scrollContainer = document.getElementById('scrollContainer');
+            const sliders = document.getElementById('modalSliders');
+            
+            if (!backdrop || !content || !world || !scrollContainer) return;
+            
+            // 设置内容区域尺寸：高度占视口75%，保持横纵比
+            const contentHeight = window.innerHeight * 0.75;
+            const contentWidth = contentHeight * DASHENGKUI_ASPECT_RATIO;
+            content.style.width = contentWidth + 'px';
+            content.style.height = contentHeight + 'px';
+            
+            // 计算世界坐标：内容始终居中显示
+            const viewportWidth = scrollContainer.clientWidth;
+            // 世界坐标 = 当前偏移量 + 视口居中偏移
+            dashengkuiWorldX = currentOffset + (viewportWidth - contentWidth) / 2;
+            dashengkuiWorldY = 0;
+            
+            // 显示
+            backdrop.classList.add('active');
+            content.classList.add('active');
+            sliders.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            currentSlide = 0;
+            updateSlide();
+            
+            // 立即更新位置
+            updateDashengkuiPositionFromWorld();
+        }
+
+        function closeDashengkui() {
+            const backdrop = document.getElementById('dashengkuiBackdrop');
+            const content = document.getElementById('dashengkuiContent');
+            const sliders = document.getElementById('modalSliders');
+            
+            if (backdrop) backdrop.classList.remove('active');
+            if (content) content.classList.remove('active');
+            if (sliders) sliders.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+        
+        // 从世界坐标更新大盛魁屏幕位置
+        function updateDashengkuiPositionFromWorld() {
+            const content = document.getElementById('dashengkuiContent');
+            const scrollContainer = document.getElementById('scrollContainer');
+            if (!content || !content.classList.contains('active') || !scrollContainer) return;
+            
+            // 世界坐标转屏幕坐标（X轴跟随world移动）
+            const screenX = dashengkuiWorldX - currentOffset;
+            
+            // Y轴固定居中
+            const viewportHeight = scrollContainer.clientHeight;
+            const contentRect = content.getBoundingClientRect();
+            const modalHeight = contentRect.height || (viewportHeight * 0.75);
+            const screenY = (viewportHeight - modalHeight) / 2;
+            
+            content.style.left = screenX + 'px';
+            content.style.top = screenY + 'px';
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlide();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateSlide();
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSlide();
+        }
+
+        function updateSlide() {
+            const slides = document.querySelectorAll('.dashengkui-slide');
+            const prevSlideIndex = (currentSlide - 1 + totalSlides) % totalSlides;
+            
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active', 'exit');
+                if (i === currentSlide) {
+                    slide.classList.add('active');
+                } else if (i === prevSlideIndex) {
+                    slide.classList.add('exit');
+                }
+            });
+
+            document.getElementById('dashengkuiCounter').textContent = (currentSlide + 1) + ' / ' + totalSlides;
+            
+            generateHotspots();
+        }
+
+        // 键盘左右键切换
+        document.addEventListener('keydown', (e) => {
+            const dsContent = document.getElementById('dashengkuiContent');
+            if (dsContent && dsContent.classList.contains('active')) {
+                if (e.key === 'ArrowLeft') prevSlide();
+                if (e.key === 'ArrowRight') nextSlide();
+            }
+        });
+
+        // 页面加载完成后的初始化
+        window.addEventListener('load', () => {
+            console.log('盛魁市井 - 页面加载完成');
+        });
+    </script>
+</body>
+</html>
